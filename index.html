@@ -1,1711 +1,414 @@
-<!DOCTYPE html>​
-<html lang="id">​
-<head>​
-<meta charset="UTF-8">​
-<meta name="viewport" content="width=device-width,
-initial-scale=1.0">​
-<title>RMDSHOP - Toko Online Terpercaya</title>​
-<!-- Tailwind CSS CDN -->​
-<script src="https://cdn.tailwindcss.com"></script>​
-<script>​
-tailwind.config = {​
-theme: {​
-extend: {​
-colors: {​
-purple: {​
-50: '#f5f3ff',​
-100: '#ede9fe',​
-500: '#8b5cf6',​
-600: '#7c3aed',​
-700: '#6d28d9',​
-800: '#5b21b6',​
-900: '#4c1d95',​
-950: '#3b0764',​
-}​
-}​
-}​
-}​
-}​
-</script>​
-<!-- FontAwesome untuk Icon -->​
-<link rel="stylesheet"
-href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">​
-​
-<!-- Firebase App & Firestore SDK versi Kompatibel -->​
-<script
-src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"
-></script>​
-<script
-src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>​
-</head>​
-<body class="bg-purple-50 text-gray-800 font-sans pb-24 md:pb-16">​
-​
-<!-- HEADER / NAVBAR -->​
-<header class="bg-purple-800 text-white sticky top-0 z-50
-shadow-md">​
-<div class="container mx-auto px-4 py-3 flex justify-between
-items-center">​
-<!-- Logo Toko -->​
-<a href="#" onclick="tampilkanBeranda()"
-id="logo-container" class="text-2xl font-extrabold tracking-wider flex
-items-center gap-2">​
-<i class="fa-solid fa-store text-purple-300"></i> ​
-<span id="logo-text">RMD<span
-class="text-purple-300">SHOP</span></span>​
-</a>​
-​
-<nav class="hidden md:flex space-x-6 font-medium
-items-center">​
-<a href="#" onclick="tampilkanBeranda()"
-class="hover:text-purple-300 transition">Beranda</a>​
-<a href="#katalog" onclick="tampilkanBeranda()"
-class="hover:text-purple-300 transition">Kategori</a>​
-<!-- Tombol Panel Admin (Hanya muncul jika login
-sebagai admin) -->​
-<button id="nav-admin-btn" onclick="bukaPanelAdmin()"
-class="hidden bg-purple-700 hover:bg-purple-600 text-purple-200 px-3
-py-1.5 rounded-lg text-sm transition font-semibold items-center
-gap-1.5">​
-<i class="fa-solid fa-user-gear"></i> Panel Admin​
-</button>​
-<a href="#kontak" class="hover:text-purple-300
-transition">Kontak</a>​
-</nav>​
-​
-<div class="flex items-center space-x-3">​
-<div id="auth-menu" class="flex items-center
-space-x-2">​
-<button onclick="bukaModalLogin()"
-class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-2
-rounded-lg text-xs font-bold transition">​
-LOGIN​
-</button>​
-<button onclick="bukaModalDaftar()"
-class="bg-white text-purple-800 hover:bg-purple-100 px-3 py-2
-rounded-lg text-xs font-bold transition">​
-DAFTAR​
-</button>​
-</div>​
-</div>​
-</div>​
-</header>​
-​
-<!-- KONTEN UTAMA (BERANDA) -->​
-<div id="view-beranda">​
-<section class="bg-gradient-to-r from-purple-900
-via-purple-700 to-indigo-800 text-white py-12 px-4 text-center">​
-<div class="container mx-auto max-w-3xl">​
-<h1 class="text-3xl md:text-4xl font-extrabold mb-2
-leading-tight">Selamat Datang di <span
-class="text-purple-300">RMDSHOP</span></h1>​
-<p class="text-sm md:text-base text-purple-200
-mb-6">Pusat Top-Up & Belanja Online Terlengkap.</p>​
-​
-<!-- KARTU SALDO & MENU AKUN -->​
-<div id="user-dashboard-card" class="bg-purple-800
-bg-opacity-75 backdrop-blur-md border border-purple-600 p-5
-rounded-2xl shadow-xl max-w-md mx-auto hidden">​
-<div class="mb-3">​
-<span class="text-xs uppercase tracking-wider
-text-purple-300 font-bold">Total Saldo Anda</span>​
-<div id="user-saldo-display" class="text-3xl
-font-extrabold text-white mt-1">Rp 0</div>​
-</div>​
-<!-- Grid Menu Akun -->​
-<div id="dashboard-menu-grid" class="grid
-grid-cols-3 gap-2 pt-2 border-t border-purple-700">​
-<button onclick="bukaModalProfil()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs
-font-bold py-2 px-1 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-user text-sm
-text-purple-300"></i> PROFIL​
-</button>​
-<button onclick="bukaModalTopUp()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs
-font-bold py-2 px-1 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-wallet text-sm
-text-purple-300"></i> TOPUP​
-</button>​
-<button onclick="bukaModalRiwayat()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs
-font-bold py-2 px-1 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-clock-rotate-left
-text-sm text-purple-300"></i> RIWAYAT​
-</button>​
-</div>​
-</div>​
-​
-<div id="guest-banner" class="mt-4">​
-<a href="#katalog" class="bg-white text-purple-800
-font-bold px-8 py-3 rounded-full shadow-lg hover:bg-purple-100
-transition duration-300 inline-block text-sm">​
-Mulai Belanja <i class="fa-solid fa-arrow-down
-ml-2"></i>​
-</a>​
-</div>​
-</div>​
-</section>​
-​
-<!-- IMAGE SLIDER SECTION -->​
-<section class="container mx-auto px-4 pt-8 max-w-4xl">​
-<div class="relative overflow-hidden rounded-2xl shadow-md
-bg-white border border-purple-100">​
-<div id="slider-track" class="flex
-transition-transform duration-500 ease-in-out">​
-<div class="min-w-full h-44 sm:h-56 md:h-64 flex
-items-center justify-center bg-purple-900 relative">​
-<img id="banner-img-0" src="" alt="Banner 1"
-class="w-full h-full object-cover">​
-</div>​
-<div class="min-w-full h-44 sm:h-56 md:h-64 flex
-items-center justify-center bg-purple-900 relative">​
-<img id="banner-img-1" src="" alt="Banner 2"
-class="w-full h-full object-cover">​
-</div>​
-<div class="min-w-full h-44 sm:h-56 md:h-64 flex
-items-center justify-center bg-purple-900 relative">​
-<img id="banner-img-2" src="" alt="Banner 3"
-class="w-full h-full object-cover">​
-</div>​
-</div>​
-​
-<button onclick="geserSlider(-1)" class="absolute
-left-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60
-text-white w-9 h-9 rounded-full flex items-center justify-center
-transition">​
-<i class="fa-solid fa-chevron-left"></i>​
-</button>​
-<button onclick="geserSlider(1)" class="absolute
-right-2 top-1/2 -translate-y-1/2 bg-black/40 hover:bg-black/60
-text-white w-9 h-9 rounded-full flex items-center justify-center
-transition">​
-<i class="fa-solid fa-chevron-right"></i>​
-</button>​
-​
-<div class="absolute bottom-3 left-1/2
--translate-x-1/2 flex space-x-2">​
-<button onclick="setSliderIndex(0)" id="dot-0"
-class="w-2.5 h-2.5 rounded-full bg-white opacity-90
-transition"></button>​
-<button onclick="setSliderIndex(1)" id="dot-1"
-class="w-2.5 h-2.5 rounded-full bg-white opacity-50
-transition"></button>​
-<button onclick="setSliderIndex(2)" id="dot-2"
-class="w-2.5 h-2.5 rounded-full bg-white opacity-50
-transition"></button>​
-</div>​
-</div>​
-</section>​
-​
-<!-- KATEGORI UTAMA SECTION -->​
-<main id="katalog" class="container mx-auto px-4 py-12">​
-<div class="text-center mb-8">​
-<h2 class="text-3xl font-bold
-text-purple-900">Kategori Pilihan</h2>​
-<p class="text-gray-600 mt-2">Pilih kategori layanan
-yang Anda butuhkan</p>​
-</div>​
-​
-<div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4
-gap-6 max-w-4xl mx-auto">​
-<div onclick="bukaKategoriView('e-wallet')"
-class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition
-cursor-pointer flex flex-col items-center text-center group border
-border-purple-100">​
-<div class="w-16 h-16 bg-purple-100
-group-hover:bg-purple-200 rounded-2xl flex items-center justify-center
-text-purple-700 text-2xl mb-4 transition">​
-<i class="fa-solid fa-wallet"></i>​
-</div>​
-<h3 class="font-bold text-lg
-text-gray-800">E-WALLET</h3>​
-<p class="text-xs text-gray-500 mt-1">Topup Dana,
-Gopay, Ovo, dll</p>​
-</div>​
-​
-<div onclick="bukaKategoriView('pulsa')"
-class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition
-cursor-pointer flex flex-col items-center text-center group border
-border-purple-100">​
-<div class="w-16 h-16 bg-purple-100
-group-hover:bg-purple-200 rounded-2xl flex items-center justify-center
-text-purple-700 text-2xl mb-4 transition">​
-<i class="fa-solid fa-mobile-screen"></i>​
-</div>​
-<h3 class="font-bold text-lg
-text-gray-800">PULSA</h3>​
-<p class="text-xs text-gray-500 mt-1">Pulsa &
-Paket Data Semua Operator</p>​
-</div>​
-​
-<div onclick="bukaKategoriView('game')"
-class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition
-cursor-pointer flex flex-col items-center text-center group border
-border-purple-100">​
-<div class="w-16 h-16 bg-purple-100
-group-hover:bg-purple-200 rounded-2xl flex items-center justify-center
-text-purple-700 text-2xl mb-4 transition">​
-<i class="fa-solid fa-gamepad"></i>​
-</div>​
-<h3 class="font-bold text-lg
-text-gray-800">GAME</h3>​
-<p class="text-xs text-gray-500 mt-1">Topup
-Diamond ML, FF, Pubg</p>​
-</div>​
-​
-<div onclick="bukaKategoriView('aplikasi')"
-class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition
-cursor-pointer flex flex-col items-center text-center group border
-border-purple-100">​
-<div class="w-16 h-16 bg-purple-100
-group-hover:bg-purple-200 rounded-2xl flex items-center justify-center
-text-purple-700 text-2xl mb-4 transition">​
-<i class="fa-solid fa-layer-group"></i>​
-</div>​
-<h3 class="font-bold text-lg
-text-gray-800">APLIKASI</h3>​
-<p class="text-xs text-gray-500 mt-1">Langganan
-Netflix, Spotify, dll</p>​
-</div>​
-</div>​
-</main>​
-</div>​
-​
-<!-- TAMPILAN KATEGORI DETAIL -->​
-<div id="view-kategori-detail" class="container mx-auto px-4 py-8
-hidden max-w-4xl">​
-<button onclick="tampilkanBeranda()" class="mb-4
-text-purple-700 hover:text-purple-900 font-bold flex items-center
-gap-2 text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border
-border-purple-100 inline-flex">​
-<i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda​
-</button>​
-​
-<div class="bg-white p-6 rounded-2xl shadow-sm mb-6 flex
-items-center gap-4 border border-purple-100">​
-<div id="detail-kat-icon" class="w-14 h-14 bg-purple-100
-text-purple-700 rounded-2xl flex items-center justify-center text-2xl
-shadow-inner">​
-<i class="fa-solid fa-wallet"></i>​
-</div>​
-<div>​
-<h2 id="detail-kat-title" class="text-2xl
-font-extrabold text-purple-900 uppercase">E-Wallet</h2>​
-<p id="detail-kat-desc" class="text-xs text-gray-500
-mt-0.5">Pilih produk dan layanan kategori ini dengan cepat dan
-aman.</p>​
-</div>​
-</div>​
-​
-<div class="mb-6">​
-<input type="text" id="search-kategori-input"
-oninput="renderProdukKategoriDetail()" placeholder="Cari produk di
-kategori ini..." class="w-full bg-white border border-purple-200
-rounded-xl p-3.5 text-sm focus:outline-none focus:border-purple-600
-shadow-sm">​
-</div>​
-​
-<div id="detail-produk-grid" class="grid grid-cols-2
-sm:grid-cols-3 md:grid-cols-3 gap-4"></div>​
-</div>​
-​
-<!-- TAMPILAN DETAIL PRODUK -->​
-<div id="view-detail-produk" class="container mx-auto px-4 py-8
-hidden max-w-2xl">​
-<button onclick="bukaKategoriView(produkDipilih.kategori)"
-class="mb-4 text-purple-700 hover:text-purple-900 font-bold flex
-items-center gap-2 text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm
-border border-purple-100 inline-flex">​
-<i class="fa-solid fa-arrow-left"></i> Kembali​
-</button>​
-​
-<div class="bg-white p-6 rounded-2xl shadow-md border
-border-purple-100 mb-4 flex items-center gap-4">​
-<img id="transaksi-produk-img" src="" alt="Produk"
-class="w-16 h-16 object-cover rounded-xl border">​
-<div>​
-<h2 id="transaksi-produk-nama" class="text-xl
-font-bold text-purple-900">Nama Produk</h2>​
-<p class="text-xs text-gray-500">Pilih nominal dan
-lengkapi data pesanan di bawah ini.</p>​
-</div>​
-</div>​
-​
-<div class="space-y-4">​
-<div class="bg-white p-5 rounded-2xl shadow-sm border
-border-purple-100">​
-<label class="block text-sm font-bold text-purple-900
-mb-2">1. Masukkan Nomor Tujuan / ID Akun:</label>​
-<input type="text" id="input-target-tujuan"
-inputmode="numeric" oninput="this.value =
-this.value.replace(/[^0-9]/g, '')" placeholder="Contoh: 08123456789
-(Hanya Angka)" class="w-full border border-purple-200 rounded-xl p-3
-text-sm focus:outline-none focus:border-purple-600">​
-<p class="text-[11px] text-gray-400 mt-1">*Hanya dapat
-diisi dengan angka.</p>​
-</div>​
-​
-<div class="bg-white p-5 rounded-2xl shadow-sm border
-border-purple-100">​
-<label class="block text-sm font-bold text-purple-900
-mb-3">2. Nominal:</label>​
-<div id="nominal-grid-container" class="grid
-grid-cols-2 gap-3"></div>​
-</div>​
-​
-<div class="bg-white p-5 rounded-2xl shadow-sm border
-border-purple-100">​
-<label class="block text-sm font-bold text-purple-900
-mb-2">3. Metode Pembayaran:</label>​
-<div class="bg-purple-50 p-3.5 rounded-xl border
-border-purple-200 flex justify-between items-center">​
-<span class="text-xs font-semibold
-text-gray-700">Saldo Utama:</span>​
-<span id="label-saldo-utama" class="text-sm
-font-extrabold text-purple-900">Rp 0</span>​
-</div>​
-</div>​
-​
-<div class="bg-white p-5 rounded-2xl shadow-sm border
-border-purple-100 space-y-3">​
-<label class="block text-sm font-bold
-text-purple-900">4. Konfirmasi Pembayaran:</label>​
-​
-<div>​
-<label class="block text-xs font-bold
-text-gray-600 mb-1">Nomor WhatsApp (Isi hanya angka):</label>​
-<input type="text" id="input-wa-konfirmasi"
-inputmode="numeric" oninput="this.value =
-this.value.replace(/[^0-9]/g, '')" placeholder="08xxxxxxxxxx"
-class="w-full border border-purple-200 rounded-xl p-2.5 text-sm
-focus:outline-none focus:border-purple-600">​
-</div>​
-​
-<div class="bg-purple-50 p-4 rounded-xl space-y-1.5
-border border-purple-100 text-xs">​
-<div class="font-bold text-purple-900 mb-1
-uppercase">Ringkasan Pesanan:</div>​
-<div class="flex justify-between text-gray-600">​
-<span>Nominal</span>​
-<span id="summary-nominal" class="font-bold
-text-purple-900">-</span>​
-</div>​
-<div class="flex justify-between text-gray-600">​
-<span>Metode Pembayaran</span>​
-<span class="font-bold text-purple-900">Saldo
-Utama</span>​
-</div>​
-<div class="flex justify-between text-sm font-bold
-text-purple-900 border-t pt-2 mt-1">​
-<span>Total Tagihan</span>​
-<span id="summary-total">Rp 0</span>​
-</div>​
-</div>​
-​
-<button onclick="eksekusiBeliSekarang()" class="w-full
-bg-pink-600 hover:bg-pink-500 text-white font-bold py-3.5 rounded-xl
-transition shadow-md text-sm mt-2">​
-BELI SEKARANG​
-</button>​
-</div>​
-</div>​
-</div>​
-​
-<!-- FOOTER -->​
-<footer id="kontak" class="bg-purple-950 text-purple-300 py-8 px-4
-border-t border-purple-800 mt-12">​
-<div class="container mx-auto flex flex-col md:flex-row
-justify-between items-center gap-4">​
-<div>​
-<h3 class="text-xl font-bold text-white">RMDSHOP</h3>​
-<p class="text-sm mt-1">Belanja Mudah, Aman, dan
-Nyaman.</p>​
-</div>​
-<div class="flex space-x-6 text-xl">​
-<a href="#" class="hover:text-white transition"><i
-class="fa-brands fa-instagram"></i></a>​
-<a href="#" class="hover:text-white transition"><i
-class="fa-brands fa-whatsapp"></i></a>​
-<a href="#" class="hover:text-white transition"><i
-class="fa-brands fa-facebook"></i></a>​
-</div>​
-<p class="text-xs text-purple-400">© 2026 RMDSHOP. All
-Rights Reserved.</p>​
-</div>​
-</footer>​
-​
-<!-- FIXED BOTTOM NAVIGATION BAR -->​
-<div class="fixed bottom-0 left-0 right-0 bg-purple-900 border-t
-border-purple-700 shadow-2xl z-40 px-2 py-2">​
-<div class="max-w-md mx-auto flex justify-around
-items-center">​
-<button onclick="bukaKategoriView('e-wallet')" class="flex
-flex-col items-center text-purple-200 hover:text-white transition
-group py-1 px-2">​
-<div class="bg-purple-800 group-hover:bg-purple-700
-p-2 rounded-xl mb-1 transition">​
-<i class="fa-solid fa-wallet text-lg
-text-purple-300"></i>​
-</div>​
-<span class="text-[11px] font-semibold
-tracking-wide">E-WALLET</span>​
-</button>​
-<button onclick="bukaKategoriView('pulsa')" class="flex
-flex-col items-center text-purple-200 hover:text-white transition
-group py-1 px-2">​
-<div class="bg-purple-800 group-hover:bg-purple-700
-p-2 rounded-xl mb-1 transition">​
-<i class="fa-solid fa-mobile-screen text-lg
-text-purple-300"></i>​
-</div>​
-<span class="text-[11px] font-semibold
-tracking-wide">PULSA</span>​
-</button>​
-<button onclick="tampilkanBeranda()" class="flex flex-col
-items-center -mt-5 text-white transition group">​
-<div class="bg-pink-600 hover:bg-pink-500 shadow-lg
-w-14 h-14 rounded-full flex items-center justify-center border-4
-border-purple-900 transition transform group-hover:scale-105">​
-<i class="fa-solid fa-bars text-2xl
-text-white"></i>​
-</div>​
-<span class="text-xs font-bold tracking-wider
-text-pink-300 mt-1">MENU</span>​
-</button>​
-<button onclick="bukaKategoriView('game')" class="flex
-flex-col items-center text-purple-200 hover:text-white transition
-group py-1 px-2">​
-<div class="bg-purple-800 group-hover:bg-purple-700
-p-2 rounded-xl mb-1 transition">​
-<i class="fa-solid fa-gamepad text-lg
-text-purple-300"></i>​
-</div>​
-<span class="text-[11px] font-semibold
-tracking-wide">GAME</span>​
-</button>​
-<button onclick="bukaKategoriView('aplikasi')" class="flex
-flex-col items-center text-purple-200 hover:text-white transition
-group py-1 px-2">​
-<div class="bg-purple-800 group-hover:bg-purple-700
-p-2 rounded-xl mb-1 transition">​
-<i class="fa-solid fa-layer-group text-lg
-text-purple-300"></i>​
-</div>​
-<span class="text-[11px] font-semibold
-tracking-wide">APLIKASI</span>​
-</button>​
-</div>​
-</div>​
-​
-<!-- KUSTOM POP-UP MODAL -->​
-<div id="custom-alert-modal" class="fixed inset-0 bg-black
-bg-opacity-60 hidden z-50 flex items-center justify-center p-4">​
-<div class="bg-white rounded-2xl max-w-sm w-full p-6
-text-center shadow-2xl">​
-<div id="alert-icon-wrapper" class="bg-purple-100 w-14
-h-14 rounded-full flex items-center justify-center mx-auto mb-3
-text-purple-700 text-2xl">​
-<i id="alert-icon-class" class="fa-solid
-fa-circle-exclamation"></i>​
-</div>​
-<h3 id="alert-title" class="text-xl font-bold
-text-gray-900 mb-2">Pemberitahuan</h3>​
-<p id="alert-message" class="text-xs text-gray-600
-mb-6">Pesan notifikasi di sini...</p>​
-<div id="alert-btn-container" class="flex gap-2">​
-<button onclick="tutupCustomAlert()" class="w-full
-bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5
-rounded-xl text-sm transition">OK</button>​
-</div>​
-</div>​
-</div>​
-​
-<!-- MODAL PROFIL -->​
-<div id="profil-modal" class="fixed inset-0 bg-black bg-opacity-50
-hidden z-50 flex items-center justify-center p-4">​
-<div class="bg-white rounded-2xl max-w-sm w-full p-6
-shadow-2xl relative">​
-<button onclick="tutupModalProfil()" class="absolute top-4
-right-4 text-gray-400 hover:text-gray-600 text-xl
-font-bold">×</button>​
-<div class="text-center mb-6">​
-<div class="bg-purple-100 w-16 h-16 rounded-full flex
-items-center justify-center mx-auto mb-2 text-purple-700 text-2xl">​
-<i class="fa-solid fa-user-circle"></i>​
-</div>​
-<h3 id="profil-nama" class="text-xl font-bold
-text-purple-900">Nama User</h3>​
-<p id="profil-email" class="text-xs text-gray-500
-mt-0.5">email@domain.com</p>​
-</div>​
-<div class="bg-purple-50 p-4 rounded-xl mb-4 text-center">​
-<span class="text-xs font-bold text-purple-800
-uppercase">Saldo Aktif</span>​
-<div id="profil-saldo" class="text-2xl font-extrabold
-text-purple-900 mt-1">Rp 0</div>​
-</div>​
-<button onclick="tutupModalProfil()" class="w-full
-bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5
-rounded-lg text-sm transition">Tutup</button>​
-</div>​
-</div>​
-​
-<!-- MODAL TOPUP QRIS -->​
-<div id="topup-modal" class="fixed inset-0 bg-black bg-opacity-50
-hidden z-50 flex items-center justify-center p-4">​
-<div class="bg-white rounded-2xl max-w-sm w-full p-6
-shadow-2xl relative text-center">​
-<button onclick="tutupModalTopUp()" class="absolute top-4
-right-4 text-gray-400 hover:text-gray-600 text-xl
-font-bold">×</button>​
-<h3 class="text-xl font-bold text-purple-900 mb-1">Top-Up
-Saldo via QRIS</h3>​
-<p class="text-xs text-gray-500 mb-4">Scan QRIS di bawah
-ini untuk melakukan pembayaran</p>​
-<div class="bg-purple-50 p-3 rounded-xl border
-border-purple-200 inline-block mb-3">​
-<img id="qris-img-display"
-src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=RMD
-SHOP-TOPUP" alt="QRIS Topup" class="w-48 h-48 mx-auto object-contain
-rounded-lg">​
-</div>​
-<div class="mb-4 bg-red-50 border border-red-200
-rounded-lg p-2">​
-<span class="text-xs text-red-600 font-bold">Batas
-Waktu Pembayaran:</span>​
-<div id="qris-countdown" class="text-lg font-extrabold
-text-red-700">05:00</div>​
-</div>​
-<div class="space-y-3">​
-<input type="number" id="input-topup-nominal"
-placeholder="Masukkan Nominal Topup (Rp)" class="w-full border
-border-purple-200 rounded-lg p-2.5 text-sm text-center
-focus:outline-none focus:border-purple-600 font-bold">​
-<button onclick="prosesTopUpQRIS()" class="w-full
-bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-xl
-transition shadow-md text-sm">​
-SAYA SUDAH BAYAR / KONFIRMASI​
-</button>​
-</div>​
-</div>​
-</div>​
-​
-<!-- MODAL RIWAYAT -->​
-<div id="riwayat-modal" class="fixed inset-0 bg-black
-bg-opacity-50 hidden z-50 flex items-center justify-center p-4">​
-<div class="bg-white rounded-2xl max-w-md w-full p-6
-shadow-2xl relative">​
-<button onclick="tutupModalRiwayat()" class="absolute
-top-4 right-4 text-gray-400 hover:text-gray-600 text-xl
-font-bold">×</button>​
-<div class="text-center mb-4">​
-<h3 class="text-xl font-bold text-purple-900"><i
-class="fa-solid fa-clock-rotate-left mr-2"></i> Riwayat Transaksi</h3>​
-</div>​
-<div id="riwayat-list-container" class="max-h-60
-overflow-y-auto space-y-2 mb-4 text-left">​
-<p class="text-gray-500 text-center py-4
-text-sm">Belum ada riwayat transaksi.</p>​
-</div>​
-<button onclick="tutupModalRiwayat()" class="w-full
-bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5
-rounded-lg text-sm transition">Tutup</button>​
-</div>​
-</div>​
-​
-<!-- MODAL SALDO TIDAK CUKUP -->​
-<div id="saldo-kurang-modal" class="fixed inset-0 bg-black
-bg-opacity-60 hidden z-50 flex items-center justify-center p-4">​
-<div class="bg-white rounded-2xl max-w-sm w-full p-6
-text-center shadow-2xl">​
-<div class="bg-red-100 w-14 h-14 rounded-full flex
-items-center justify-center mx-auto mb-3 text-red-600 text-2xl">​
-<i class="fa-solid fa-triangle-exclamation"></i>​
-</div>​
-<h3 class="text-xl font-bold text-gray-900 mb-2">Saldo
-Anda Tidak Cukup</h3>​
-<p class="text-xs text-gray-600 mb-6">Saldo Anda tidak
-cukup untuk melakukan pembelian produk ini. Silahkan lakukan Topup
-Saldo terlebih dahulu.</p>​
-<div class="flex gap-2">​
-<button onclick="tutupModalSaldoKurang()"
-class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold
-py-2.5 rounded-xl text-sm transition">OK</button>​
-<button onclick="bukaTopupDariKurang()" class="flex-1
-bg-purple-700 hover:bg-purple-800 text-white font-bold py-2.5
-rounded-xl text-sm transition">Topup</button>​
-</div>​
-</div>​
-</div>​
-​
-<!-- PANEL ADMIN -->​
-<div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-60
-hidden z-50 flex items-center justify-center p-4 overflow-y-auto">​
-<div class="bg-purple-900 text-white rounded-2xl max-w-4xl
-w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">​
-<button onclick="tutupPanelAdmin()" class="absolute top-4
-right-4 text-purple-300 hover:text-white text-2xl
-font-bold">×</button>​
-<div class="text-center mb-8">​
-<h2 class="text-3xl font-bold text-purple-200"><i
-class="fa-solid fa-user-gear mr-2"></i> Panel Admin Toko</h2>​
-<p class="text-purple-300 mt-1 text-sm">Kelola Logo,
-QRIS, Banner Slider, Produk, dan Variasi Nominal secara real-time via
-Server</p>​
-</div>​
-​
-<div class="bg-purple-800 p-5 rounded-xl shadow border
-border-purple-700 mb-6">​
-<h3 class="text-lg font-bold mb-3 text-purple-200
-border-b border-purple-700 pb-2">Pengaturan Logo & QRIS</h3>​
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">​
-<div>​
-<label class="block text-xs uppercase
-font-bold text-purple-300 mb-1">URL Logo Toko</label>​
-<input type="text" id="admin-input-logo"
-placeholder="https://..." class="w-full bg-purple-900 border
-border-purple-600 rounded-lg p-2 text-sm text-white focus:outline-none
-mb-2">​
-<button onclick="ubahLogoToko()" class="w-full
-bg-purple-600 hover:bg-purple-500 font-bold py-2 rounded-lg text-xs
-transition">Simpan Logo</button>​
-</div>​
-<div>​
-<label class="block text-xs uppercase
-font-bold text-purple-300 mb-1">URL QRIS Topup</label>​
-<input type="text" id="admin-input-qris"
-placeholder="https://..." class="w-full bg-purple-900 border
-border-purple-600 rounded-lg p-2 text-sm text-white focus:outline-none
-mb-2">​
-<button onclick="ubahQrisToko()" class="w-full
-bg-purple-600 hover:bg-purple-500 font-bold py-2 rounded-lg text-xs
-transition">Simpan QRIS</button>​
-</div>​
-</div>​
-</div>​
-​
-<div class="bg-purple-800 p-5 rounded-xl shadow border
-border-purple-700 mb-6">​
-<h3 class="text-lg font-bold mb-3 text-purple-200
-border-b border-purple-700 pb-2">Pengaturan 3 Banner Slider
-(ImageUrl)</h3>​
-<div class="grid grid-cols-1 md:grid-cols-3 gap-3
-mb-3">​
-<div>​
-<label class="block text-xs uppercase
-font-bold text-purple-300 mb-1">Banner 1 URL</label>​
-<input type="text" id="admin-banner-0"
-placeholder="https://..." class="w-full bg-purple-900 border
-border-purple-600 rounded-lg p-2 text-sm text-white
-focus:outline-none">​
-</div>​
-<div>​
-<label class="block text-xs uppercase
-font-bold text-purple-300 mb-1">Banner 2 URL</label>​
-<input type="text" id="admin-banner-1"
-placeholder="https://..." class="w-full bg-purple-900 border
-border-purple-600 rounded-lg p-2 text-sm text-white
-focus:outline-none">​
-</div>​
-<div>​
-<label class="block text-xs uppercase
-font-bold text-purple-300 mb-1">Banner 3 URL</label>​
-<input type="text" id="admin-banner-2"
-placeholder="https://..." class="w-full bg-purple-900 border
-border-purple-600 rounded-lg p-2 text-sm text-white
-focus:outline-none">​
-</div>​
-</div>​
-<button onclick="ubahBanners()" class="w-full
-bg-purple-600 hover:bg-purple-500 font-bold py-2 rounded-lg text-xs
-transition">Simpan Banner Slider</button>​
-</div>​
-​
-<div class="bg-purple-800 p-5 rounded-xl shadow border
-border-purple-700">​
-<h3 class="text-lg font-bold mb-3 text-purple-200
-border-b border-purple-700 pb-2">Tambah Item Produk Baru & Variasi
-Nominal</h3>​
-<div class="grid grid-cols-1 sm:grid-cols-2
-lg:grid-cols-3 gap-3 mb-3">​
-<div>​
-<label class="block text-xs uppercase
-font-bold text-purple-300 mb-1">Pilih Kategori</label>​
-<select id="select-kategori-produk"
-class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2
-text-sm text-white focus:outline-none">​
-<option value="e-wallet">E-WALLET</option>​
-<option value="pulsa">PULSA</option>​
-<option value="game">GAME</option>​
-<option value="aplikasi">APLIKASI</option>​
-</select>​
-</div>​
-<div>​
-<label class="block text-xs uppercase
-font-bold text-purple-300 mb-1">Nama Item</label>​
-<input type="text" id="input-nama-produk"
-placeholder="Contoh: Dana" class="w-full bg-purple-900 border
-border-purple-600 rounded-lg p-2 text-sm text-white
-focus:outline-none">​
-</div>​
-<div>​
-<label class="block text-xs uppercase
-font-bold text-purple-300 mb-1">URL Gambar (ImageUrl)</label>​
-<input type="text" id="input-gambar-produk"
-placeholder="https://..." class="w-full bg-purple-900 border
-border-purple-600 rounded-lg p-2 text-sm text-white
-focus:outline-none">​
-</div>​
-</div>​
-<div class="mb-3">​
-<label class="block text-xs uppercase font-bold
-text-purple-300 mb-1">Daftar Nominal (Pisahkan dengan koma, contoh:
-50000, 100000, 200000)</label>​
-<input type="text" id="input-nominals-produk"
-placeholder="50000, 100000, 150000" class="w-full bg-purple-900 border
-border-purple-600 rounded-lg p-2 text-sm text-white focus:outline-none
-font-bold">​
-</div>​
-<button onclick="tambahProduk()" class="w-full
-bg-pink-600 hover:bg-pink-500 font-bold py-2.5 rounded-lg text-sm
-transition">Simpan Item Baru</button>​
-</div>​
-</div>​
-</div>​
-​
-<!-- MODAL LOGIN -->​
-<div id="login-modal" class="fixed inset-0 bg-black bg-opacity-50
-hidden z-50 flex items-center justify-center p-4">​
-<div class="bg-white rounded-2xl max-w-sm w-full p-6
-shadow-2xl relative">​
-<button onclick="tutupModalLogin()" class="absolute top-4
-right-4 text-gray-400 hover:text-gray-600 text-xl
-font-bold">×</button>​
-<div class="text-center mb-6">​
-<h3 class="text-2xl font-bold text-purple-900">Masuk
-Akun</h3>​
-<p class="text-xs text-gray-500 mt-1">Silahkan
-masukkan Email dan Password anda.</p>​
-</div>​
-<form onsubmit="prosesLogin(event)" class="space-y-4">​
-<div>​
-<label class="block text-xs font-bold
-text-purple-900 mb-1">Email</label>​
-<input type="email" id="login-email" required
-placeholder="nama@email.com" class="w-full border border-purple-200
-rounded-lg p-2.5 text-sm focus:outline-none">​
-</div>​
-<div>​
-<label class="block text-xs font-bold
-text-purple-900 mb-1">Password</label>​
-<input type="password" id="login-password"
-required placeholder="••••••••" class="w-full border border-purple-200
-rounded-lg p-2.5 text-sm focus:outline-none">​
-</div>​
-<button type="submit" class="w-full bg-purple-700
-hover:bg-purple-800 text-white font-bold py-3 rounded-lg transition
-shadow-md">LOGIN</button>​
-</form>​
-<p class="text-center text-xs text-gray-500 mt-4">​
-Belum punya akun? <button onclick="alihKeDaftar()"
-class="text-purple-600 font-bold hover:underline">Daftar di
-sini</button>​
-</p>​
-</div>​
-</div>​
-​
-<!-- MODAL DAFTAR -->​
-<div id="register-modal" class="fixed inset-0 bg-black
-bg-opacity-50 hidden z-50 flex items-center justify-center p-4">​
-<div class="bg-white rounded-2xl max-w-sm w-full p-6
-shadow-2xl relative">​
-<button onclick="tutupModalDaftar()" class="absolute top-4
-right-4 text-gray-400 hover:text-gray-600 text-xl
-font-bold">×</button>​
-<div class="text-center mb-6">​
-<h3 class="text-2xl font-bold text-purple-900">Daftar
-Akun Baru</h3>​
-</div>​
-<form onsubmit="prosesDaftar(event)" class="space-y-4">​
-<div>​
-<label class="block text-xs font-bold
-text-purple-900 mb-1">Nama Lengkap</label>​
-<input type="text" id="reg-nama" required
-placeholder="Nama" class="w-full border border-purple-200 rounded-lg
-p-2.5 text-sm focus:outline-none">​
-</div>​
-<div>​
-<label class="block text-xs font-bold
-text-purple-900 mb-1">Email</label>​
-<input type="email" id="reg-email" required
-placeholder="email@domain.com" class="w-full border border-purple-200
-rounded-lg p-2.5 text-sm focus:outline-none">​
-</div>​
-<div>​
-<label class="block text-xs font-bold
-text-purple-900 mb-1">Password</label>​
-<input type="password" id="reg-password" required
-placeholder="••••••••" class="w-full border border-purple-200
-rounded-lg p-2.5 text-sm focus:outline-none">​
-</div>​
-<button type="submit" class="w-full bg-purple-700
-hover:bg-purple-800 text-white font-bold py-3 rounded-lg transition
-shadow-md">DAFTAR</button>​
-</form>​
-<p class="text-center text-xs text-gray-500 mt-4">​
-Sudah punya akun? <button onclick="alihKeLogin()"
-class="text-purple-600 font-bold hover:underline">Login</button>​
-</p>​
-</div>​
-</div>​
-​
-<!-- SCRIPT JAVASCRIPT & FIREBASE CONFIG -->​
-<script>​
-// --- KONFIGURASI FIREBASE ANDA ---​
-const firebaseConfig = {​
-apiKey: "AIzaSyBUesQ1Ei23zsO0pBFuqI2VunBT4lmWlEA",​
-authDomain: "tokormd.firebaseapp.com",​
-projectId: "tokormd",​
-storageBucket: "tokormd.firebasestorage.app",​
-messagingSenderId: "1082449248040",​
-appId: "1:1082449248040:web:1fb8cb78e1f1d883ca9a1d",​
-measurementId: "G-D0LRRJNMV9"​
-};​
-​
-// Inisialisasi Firebase untuk versi Compat​
-firebase.initializeApp(firebaseConfig);​
-const db = firebase.firestore();​
-​
-let dbToko = {​
-logoUrl: "",​
-qrisUrl: "",​
-banners: [​
-"https://images.unsplash.com/photo-1607532943733-bd0501861ad9?auto=for
-mat&fit=crop&w=1000&q=80",​
-"https://images.unsplash.com/photo-1556742049-0a67d553c2a5?auto=format
-&fit=crop&w=1000&q=80",​
-"https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=for
-mat&fit=crop&w=1000&q=80"​
-],​
-produk: [​
-{ ​
-id: 1, ​
-kategori: 'e-wallet', ​
-nama: 'Dana', ​
-gambar:
-'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format
-&fit=crop&w=500&q=80',​
-nominals: [50000, 100000, 150000, 200000] ​
-},​
-{ ​
-id: 2, ​
-kategori: 'e-wallet', ​
-nama: 'GoPay', ​
-gambar:
-'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format
-&fit=crop&w=500&q=80',​
-nominals: [20000, 50000, 100000] ​
-},​
-{ ​
-id: 3, ​
-kategori: 'pulsa', ​
-nama: 'Pulsa Telkomsel', ​
-gambar:
-'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=for
-mat&fit=crop&w=500&q=80',​
-nominals: [10000, 25000, 50000, 100000] ​
-},​
-{ ​
-id: 4, ​
-kategori: 'game', ​
-nama: 'Diamond Mobile Legends', ​
-gambar:
-'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format
-&fit=crop&w=500&q=80',​
-nominals: [20000, 50000, 100000, 250000] ​
-},​
-{ ​
-id: 5, ​
-kategori: 'aplikasi', ​
-nama: 'Netflix Premium', ​
-gambar:
-'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=for
-mat&fit=crop&w=500&q=80',​
-nominals: [50000, 120000, 180000] ​
-}​
-]​
-};​
-​
-let userAktif = null;​
-let countdownTimer = null;​
-let kategoriAktif = 'e-wallet';​
-let produkDipilih = null;​
-let nominalTerpilih = null;​
-let currentSliderIndex = 0;​
-let sliderInterval = null;​
-​
-// Fungsi Custom Alert​
-function showCustomAlert(judul, pesan) {​
-document.getElementById('alert-title').innerText = judul;​
-document.getElementById('alert-message').innerText =
-pesan;​
-document.getElementById('custom-alert-modal').classList.remove('hidden
-');​
-}​
-​
-function tutupCustomAlert() {​
-document.getElementById('custom-alert-modal').classList.add('hidden');​
-}​
-​
-function getDatabaseUser() {​
-let data = localStorage.getItem('rmdshop_users');​
-if (!data) {​
-let defaultUsers = [​
-{ nama: "Admin RMD", email: "admin@rmdshop.com",
-password: "admin123", saldo: 1000000, riwayat: [] }​
-];​
-localStorage.setItem('rmdshop_users',
-JSON.stringify(defaultUsers));​
-return defaultUsers;​
-}​
-return JSON.parse(data);​
-}​
-​
-function saveDatabaseUser(users) {​
-localStorage.setItem('rmdshop_users',
-JSON.stringify(users));​
-}​
-​
-// Sinkronisasi data Real-time dari Firebase Firestore
-(Otomatis Memperbarui Tampilan User)​
-function muatDataRealtime() {​
-db.collection("toko").doc("setting").onSnapshot((doc) => {​
-if (doc.exists) {​
-let data = doc.data();​
-if (data.logoUrl !== undefined) dbToko.logoUrl =
-data.logoUrl;​
-if (data.qrisUrl !== undefined) dbToko.qrisUrl =
-data.qrisUrl;​
-if (data.banners) dbToko.banners = data.banners;​
-if (data.produk) dbToko.produk = data.produk;​
-} else {​
-db.collection("toko").doc("setting").set(dbToko);​
-}​
-applyLogoBranding();​
-applyBanners();​
-if
-(!document.getElementById('view-kategori-detail').classList.contains('
-hidden')) {​
-renderProdukKategoriDetail();​
-}​
-}, (error) => {​
-console.error("Gagal memuat data realtime: ", error);​
-});​
-}​
-​
-// Simpan perubahan ke Firebase Firestore​
-function simpanKeDatabaseServer() {​
-db.collection("toko").doc("setting").set({​
-logoUrl: dbToko.logoUrl,​
-qrisUrl: dbToko.qrisUrl,​
-banners: dbToko.banners,​
-produk: dbToko.produk​
-}).then(() => {​
-showCustomAlert("Sukses", "Perubahan berhasil disimpan
-ke server!");​
-}).catch((error) => {​
-showCustomAlert("Gagal", "Terjadi kesalahan: " +
-error.message);​
-});​
-}​
-​
-window.onload = function() {​
-muatDataRealtime();​
-startAutoSlider();​
-​
-let activeSession =
-localStorage.getItem('rmdshop_active_user');​
-if (activeSession) {​
-let users = getDatabaseUser();​
-let found = users.find(u => u.email ===
-activeSession);​
-if (found) userAktif = found;​
-}​
-cekStatusAuth();​
-};​
-​
-// --- IMAGE SLIDER LOGIC ---​
-function applyBanners() {​
-for (let i = 0; i < 3; i++) {​
-let imgEl =
-document.getElementById(`banner-img-${i}`);​
-if (imgEl && dbToko.banners[i]) {​
-imgEl.src = dbToko.banners[i];​
-}​
-}​
-}​
-​
-function updateSliderView() {​
-let track = document.getElementById('slider-track');​
-track.style.transform = `translateX(-${currentSliderIndex
-* 100}%)`;​
-for (let i = 0; i < 3; i++) {​
-let dot = document.getElementById(`dot-${i}`);​
-if (dot) {​
-if (i === currentSliderIndex) {​
-dot.classList.remove('opacity-50');​
-dot.classList.add('opacity-90');​
-} else {​
-dot.classList.remove('opacity-90');​
-dot.classList.add('opacity-50');​
-}​
-}​
-}​
-}​
-​
-function geserSlider(direction) {​
-currentSliderIndex = (currentSliderIndex + direction + 3)
-% 3;​
-updateSliderView();​
-resetAutoSlider();​
-}​
-​
-function setSliderIndex(index) {​
-currentSliderIndex = index;​
-updateSliderView();​
-resetAutoSlider();​
-}​
-​
-function startAutoSlider() {​
-if (sliderInterval) clearInterval(sliderInterval);​
-sliderInterval = setInterval(() => {​
-currentSliderIndex = (currentSliderIndex + 1) % 3;​
-updateSliderView();​
-}, 4000);​
-}​
-​
-function resetAutoSlider() {​
-clearInterval(sliderInterval);​
-startAutoSlider();​
-}​
-​
-function ubahBanners() {​
-let b0 =
-document.getElementById('admin-banner-0').value.trim();​
-let b1 =
-document.getElementById('admin-banner-1').value.trim();​
-let b2 =
-document.getElementById('admin-banner-2').value.trim();​
-​
-if (b0) dbToko.banners[0] = b0;​
-if (b1) dbToko.banners[1] = b1;​
-if (b2) dbToko.banners[2] = b2;​
-​
-simpanKeDatabaseServer();​
-applyBanners();​
-}​
-​
-function tampilkanBeranda() {​
-document.getElementById('view-beranda').classList.remove('hidden');​
-document.getElementById('view-kategori-detail').classList.add('hidden'
-);​
-document.getElementById('view-detail-produk').classList.add('hidden');​
-window.scrollTo({ top: 0, behavior: 'smooth' });​
-}​
-​
-function bukaKategoriView(kategori) {​
-kategoriAktif = kategori;​
-document.getElementById('view-beranda').classList.add('hidden');​
-document.getElementById('view-kategori-detail').classList.remove('hidd
-en');​
-document.getElementById('view-detail-produk').classList.add('hidden');​
-​
-let titleEl = document.getElementById('detail-kat-title');​
-let iconEl = document.getElementById('detail-kat-icon');​
-let descEl = document.getElementById('detail-kat-desc');​
-​
-titleEl.innerText = kategori.toUpperCase();​
-if (kategori === 'e-wallet') {​
-iconEl.innerHTML = '<i class="fa-solid
-fa-wallet"></i>';​
-descEl.innerText = 'Isi saldo e-wallet instant, aman,
-dan terpercaya.';​
-} else if (kategori === 'pulsa') {​
-iconEl.innerHTML = '<i class="fa-solid
-fa-mobile-screen"></i>';​
-descEl.innerText = 'Pulsa dan paket data semua
-operator.';​
-} else if (kategori === 'game') {​
-iconEl.innerHTML = '<i class="fa-solid
-fa-gamepad"></i>';​
-descEl.innerText = 'Topup game online favoritmu dengan
-cepat.';​
-} else if (kategori === 'aplikasi') {​
-iconEl.innerHTML = '<i class="fa-solid
-fa-layer-group"></i>';​
-descEl.innerText = 'Langganan aplikasi premium
-resmi.';​
-}​
-​
-document.getElementById('search-kategori-input').value =
-"";​
-renderProdukKategoriDetail();​
-window.scrollTo({ top: 0, behavior: 'smooth' });​
-}​
-​
-function renderProdukKategoriDetail() {​
-let grid = document.getElementById('detail-produk-grid');​
-let searchQuery =
-document.getElementById('search-kategori-input').value.toLowerCase();​
-grid.innerHTML = "";​
-​
-let filtered = dbToko.produk.filter(p => p.kategori ===
-kategoriAktif && p.nama.toLowerCase().includes(searchQuery));​
-​
-if (filtered.length === 0) {​
-grid.innerHTML = `<div class="col-span-full
-text-center py-10 text-gray-500 text-sm">Tidak ada produk ditemukan di
-kategori ini.</div>`;​
-return;​
-}​
-​
-let isAdmin = (userAktif && userAktif.email ===
-"admin@rmdshop.com");​
-​
-filtered.forEach(prod => {​
-let tombolHapusHtml = isAdmin ? `​
-<button onclick="hapusProduk(${prod.id})"
-class="absolute top-2 right-2 bg-red-100 hover:bg-red-200 text-red-600
-p-1.5 rounded-lg text-xs z-10" title="Hapus">​
-<i class="fa-solid fa-trash"></i>​
-</button>​
-` : '';​
-​
-grid.innerHTML += `​
-<div class="bg-white rounded-2xl shadow-sm
-hover:shadow-md transition p-4 flex flex-col items-center text-center
-relative border border-purple-100 group">​
-${tombolHapusHtml}​
-<div class="w-24 h-24 bg-purple-50 rounded-xl
-overflow-hidden mb-3 p-2 flex items-center justify-center">​
-<img src="${prod.gambar}"
-alt="${prod.nama}" class="w-full h-full object-cover rounded-lg">​
-</div>​
-<h4 class="font-bold text-gray-800 text-sm
-mb-3">${prod.nama}</h4>​
-<button onclick="pilihProdukLihat(${prod.id})"
-class="mt-auto w-full bg-purple-600 hover:bg-purple-700 text-white
-font-bold py-2 rounded-xl text-xs transition shadow-sm">​
-LIHAT​
-</button>​
-</div>​
-`;​
-});​
-}​
-​
-function pilihProdukLihat(id) {​
-produkDipilih = dbToko.produk.find(p => p.id === id);​
-if (!produkDipilih) return;​
-​
-document.getElementById('view-kategori-detail').classList.add('hidden'
-);​
-document.getElementById('view-detail-produk').classList.remove('hidden
-');​
-​
-document.getElementById('transaksi-produk-img').src =
-produkDipilih.gambar;​
-document.getElementById('transaksi-produk-nama').innerText
-= produkDipilih.nama;​
-document.getElementById('input-target-tujuan').value = "";​
-document.getElementById('input-wa-konfirmasi').value = "";​
-​
-let saldoVal = userAktif ? userAktif.saldo : 0;​
-document.getElementById('label-saldo-utama').innerText =
-"Rp " + saldoVal.toLocaleString();​
-​
-nominalTerpilih = null;​
-document.getElementById('summary-nominal').innerText =
-"-";​
-document.getElementById('summary-total').innerText = "Rp
-0";​
-​
-renderNominalBoxes();​
-window.scrollTo({ top: 0, behavior: 'smooth' });​
-}​
-​
-function renderNominalBoxes() {​
-let container =
-document.getElementById('nominal-grid-container');​
-container.innerHTML = "";​
-​
-if (!produkDipilih.nominals ||
-produkDipilih.nominals.length === 0) {​
-container.innerHTML = `<p class="col-span-2 text-xs
-text-gray-400 text-center py-2">Belum ada nominal tersedia.</p>`;​
-return;​
-}​
-​
-produkDipilih.nominals.forEach(nom => {​
-let isSelected = (nominalTerpilih === nom);​
-let activeClass = isSelected ? 'bg-purple-700
-text-white border-purple-800 shadow-md ring-2 ring-purple-400' :
-'bg-purple-50 hover:bg-purple-100 text-purple-900 border-purple-200';​
-​
-container.innerHTML += `​
-<button type="button"
-onclick="pilihNominal(${nom})" class="border ${activeClass} font-bold
-py-3 px-3 rounded-xl text-sm transition text-center flex flex-col
-items-center justify-center">​
-Rp ${nom.toLocaleString()}​
-</button>​
-`;​
-});​
-}​
-​
-function pilihNominal(nilai) {​
-nominalTerpilih = nilai;​
-renderNominalBoxes();​
-document.getElementById('summary-nominal').innerText = "Rp
-" + nilai.toLocaleString();​
-document.getElementById('summary-total').innerText = "Rp "
-+ nilai.toLocaleString();​
-}​
-​
-function eksekusiBeliSekarang() {​
-if (!userAktif) {​
-showCustomAlert("Perhatian", "Silahkan login terlebih
-dahulu untuk melakukan pembelian!");​
-bukaModalLogin();​
-return;​
-}​
-​
-let targetTujuan =
-document.getElementById('input-target-tujuan').value.trim();​
-if (!targetTujuan) {​
-showCustomAlert("Perhatian", "Silahkan masukkan Nomor
-Tujuan / ID Akun terlebih dahulu!");​
-document.getElementById('input-target-tujuan').focus();​
-return;​
-}​
-​
-if (!nominalTerpilih) {​
-showCustomAlert("Perhatian", "Wajib memilih salah satu
-nominal yang tersedia!");​
-return;​
-}​
-​
-let nomorWa =
-document.getElementById('input-wa-konfirmasi').value.trim();​
-if (!nomorWa) {​
-showCustomAlert("Perhatian", "Silahkan masukkan Nomor
-WhatsApp terlebih dahulu!");​
-document.getElementById('input-wa-konfirmasi').focus();​
-return;​
-}​
-​
-let totalTagihan = nominalTerpilih;​
-​
-if (userAktif.saldo < totalTagihan) {​
-document.getElementById('saldo-kurang-modal').classList.remove('hidden
-');​
-return;​
-}​
-​
-let users = getDatabaseUser();​
-let idx = users.findIndex(u => u.email ===
-userAktif.email);​
-if (idx !== -1) {​
-users[idx].saldo -= totalTagihan;​
-let waktu = new Date().toLocaleString();​
-users[idx].riwayat.unshift(`Pembelian
-${produkDipilih.nama} (Nominal: Rp ${totalTagihan.toLocaleString()},
-Tujuan: ${targetTujuan}, WA: ${nomorWa}) - (${waktu})`);​
-saveDatabaseUser(users);​
-userAktif = users[idx];​
-}​
-​
-cekStatusAuth();​
-showCustomAlert("Berhasil", `Pembelian berhasil! Saldo
-Anda telah terpotong sebesar Rp ${totalTagihan.toLocaleString()}.`);​
-tampilkanBeranda();​
-}​
-​
-function applyLogoBranding() {​
-let container = document.getElementById('logo-container');​
-if (dbToko.logoUrl) {​
-container.innerHTML = `<img src="${dbToko.logoUrl}"
-alt="Logo RMDSHOP" class="h-8 object-contain">`;​
-} else {​
-container.innerHTML = `<i class="fa-solid fa-store
-text-purple-300"></i> RMD<span class="text-purple-300">SHOP</span>`;​
-}​
-}​
-​
-function ubahLogoToko() {​
-let url =
-document.getElementById('admin-input-logo').value.trim();​
-if (!url) { showCustomAlert("Peringatan", "Masukkan URL
-logo!"); return; }​
-dbToko.logoUrl = url;​
-simpanKeDatabaseServer();​
-applyLogoBranding();​
-}​
-​
-function ubahQrisToko() {​
-let url =
-document.getElementById('admin-input-qris').value.trim();​
-if (!url) { showCustomAlert("Peringatan", "Masukkan URL
-QRIS!"); return; }​
-dbToko.qrisUrl = url;​
-simpanKeDatabaseServer();​
-}​
-​
-function tambahProduk() {​
-let kategori =
-document.getElementById('select-kategori-produk').value;​
-let namaProd =
-document.getElementById('input-nama-produk').value.trim();​
-let gambarProd =
-document.getElementById('input-gambar-produk').value.trim();​
-let nominalsStr =
-document.getElementById('input-nominals-produk').value.trim();​
-​
-if (!namaProd || !gambarProd || !nominalsStr) {​
-showCustomAlert("Peringatan", "Mohon isi semua data
-produk beserta daftar nominal dengan benar!");​
-return;​
-}​
-​
-let nominalsArr = nominalsStr.split(',').map(n =>
-parseInt(n.trim())).filter(n => !isNaN(n) && n > 0);​
-​
-if (nominalsArr.length === 0) {​
-showCustomAlert("Format Salah", "Masukkan angka
-dipisahkan koma, contoh: 50000, 100000");​
-return;​
-}​
-​
-dbToko.produk.push({​
-id: Date.now(),​
-kategori: kategori,​
-nama: namaProd,​
-gambar: gambarProd,​
-nominals: nominalsArr​
-});​
-​
-simpanKeDatabaseServer();​
-document.getElementById('input-nama-produk').value = "";​
-document.getElementById('input-gambar-produk').value = "";​
-document.getElementById('input-nominals-produk').value =
-"";​
-renderProdukKategoriDetail();​
-}​
-​
-function hapusProduk(id) {​
-if (confirm("Yakin ingin menghapus item ini?")) {​
-dbToko.produk = dbToko.produk.filter(p => p.id !==
-id);​
-simpanKeDatabaseServer();​
-renderProdukKategoriDetail();​
-}​
-}​
-​
-function bukaModalTopUp() {​
-if (!userAktif) { showCustomAlert("Perhatian", "Silahkan
-login terlebih dahulu!"); bukaModalLogin(); return; }​
-let qrisDisplay =
-document.getElementById('qris-img-display');​
-qrisDisplay.src = dbToko.qrisUrl ? dbToko.qrisUrl :
-"https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=RMDSHOP
--QRIS";​
-document.getElementById('topup-modal').classList.remove('hidden');​
-mulaiHitungMundur(300);​
-}​
-​
-function tutupModalTopUp() {​
-document.getElementById('topup-modal').classList.add('hidden');​
-if (countdownTimer) clearInterval(countdownTimer);​
-}​
-​
-function mulaiHitungMundur(durasiDetik) {​
-if (countdownTimer) clearInterval(countdownTimer);​
-let timer = durasiDetik, menit, detik;​
-let display = document.getElementById('qris-countdown');​
-​
-countdownTimer = setInterval(function () {​
-menit = parseInt(timer / 60, 10);​
-detik = parseInt(timer % 60, 10);​
-menit = menit < 10 ? "0" + menit : menit;​
-detik = detik < 10 ? "0" + detik : detik;​
-display.innerText = menit + ":" + detik;​
-if (--timer < 0) {​
-clearInterval(countdownTimer);​
-display.innerText = "Waktu Habis!";​
-}​
-}, 1000);​
-}​
-​
-function prosesTopUpQRIS() {​
-let nominalInput =
-parseInt(document.getElementById('input-topup-nominal').value);​
-if (isNaN(nominalInput) || nominalInput <= 0) {
-showCustomAlert("Peringatan", "Masukkan nominal valid!"); return; }​
-​
-let users = getDatabaseUser();​
-let idx = users.findIndex(u => u.email ===
-userAktif.email);​
-if (idx !== -1) {​
-users[idx].saldo += nominalInput;​
-users[idx].riwayat.unshift(`Top-Up QRIS Rp
-${nominalInput.toLocaleString()} (${new Date().toLocaleString()})`);​
-saveDatabaseUser(users);​
-userAktif = users[idx];​
-}​
-tutupModalTopUp();​
-cekStatusAuth();​
-showCustomAlert("Sukses", `Top-up berhasil! Saldo
-bertambah Rp ${nominalInput.toLocaleString()}`);​
-}​
-​
-function prosesDaftar(e) {​
-e.preventDefault();​
-let nama =
-document.getElementById('reg-nama').value.trim();​
-let email =
-document.getElementById('reg-email').value.trim();​
-let password =
-document.getElementById('reg-password').value.trim();​
-​
-let users = getDatabaseUser();​
-if (users.some(u => u.email === email)) {
-showCustomAlert("Gagal", "Email sudah terdaftar!"); return; }​
-​
-users.push({ nama, email, password, saldo: 0, riwayat: []
-});​
-saveDatabaseUser(users);​
-showCustomAlert("Sukses", "Pendaftaran berhasil! Silahkan
-login.");​
-tutupModalDaftar();​
-bukaModalLogin();​
-}​
-​
-function prosesLogin(e) {​
-e.preventDefault();​
-let email =
-document.getElementById('login-email').value.trim();​
-let password =
-document.getElementById('login-password').value.trim();​
-​
-let users = getDatabaseUser();​
-let found = users.find(u => u.email === email &&
-u.password === password);​
-if (!found) { showCustomAlert("Gagal", "Email atau
-password salah!"); return; }​
-​
-userAktif = found;​
-localStorage.setItem('rmdshop_active_user',
-userAktif.email);​
-showCustomAlert("Sukses", "Berhasil Login!");​
-tutupModalLogin();​
-cekStatusAuth();​
-}​
-​
-function logout() {​
-userAktif = null;​
-localStorage.removeItem('rmdshop_active_user');​
-tutupPanelAdmin();​
-showCustomAlert("Info", "Logout berhasil.");​
-cekStatusAuth();​
-}​
-​
-function cekStatusAuth() {​
-let container = document.getElementById('auth-menu');​
-let adminBtn = document.getElementById('nav-admin-btn');​
-let dashboardCard =
-document.getElementById('user-dashboard-card');​
-let guestBanner = document.getElementById('guest-banner');​
-let dashboardMenuGrid =
-document.getElementById('dashboard-menu-grid');​
-​
-if (userAktif) {​
-let users = getDatabaseUser();​
-let current = users.find(u => u.email ===
-userAktif.email);​
-if (current) userAktif = current;​
-​
-container.innerHTML = `​
-<div class="flex items-center gap-2">​
-<button onclick="logout()" class="bg-pink-600
-text-white px-3 py-1.5 rounded-lg text-xs font-bold">LOGOUT</button>​
-</div>​
-`;​
-dashboardCard.classList.remove('hidden');​
-guestBanner.classList.add('hidden');​
-document.getElementById('user-saldo-display').innerText = "Rp " +
-userAktif.saldo.toLocaleString();​
-​
-if (userAktif.email === "admin@rmdshop.com") {​
-if (adminBtn) {​
-adminBtn.classList.remove('hidden');​
-adminBtn.classList.add('flex');​
-}​
-dashboardMenuGrid.className = "grid grid-cols-4
-gap-1.5 pt-2 border-t border-purple-700";​
-dashboardMenuGrid.innerHTML = `​
-<button onclick="bukaModalProfil()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-[11px]
-font-bold py-2 px-0.5 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-user text-sm
-text-purple-300"></i> PROFIL​
-</button>​
-<button onclick="bukaModalTopUp()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-[11px]
-font-bold py-2 px-0.5 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-wallet text-sm
-text-purple-300"></i> TOPUP​
-</button>​
-<button onclick="bukaModalRiwayat()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-[11px]
-font-bold py-2 px-0.5 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-clock-rotate-left
-text-sm text-purple-300"></i> RIWAYAT​
-</button>​
-<button onclick="bukaPanelAdmin()"
-class="bg-pink-700 hover:bg-pink-600 text-white text-[11px] font-bold
-py-2 px-0.5 rounded-xl transition flex flex-col items-center gap-1">​
-<i class="fa-solid fa-user-gear text-sm
-text-pink-200"></i> ADMIN​
-</button>​
-`;​
-} else {​
-if (adminBtn) {​
-adminBtn.classList.add('hidden');​
-adminBtn.classList.remove('flex');​
-}​
-dashboardMenuGrid.className = "grid grid-cols-3
-gap-2 pt-2 border-t border-purple-700";​
-dashboardMenuGrid.innerHTML = `​
-<button onclick="bukaModalProfil()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs
-font-bold py-2 px-1 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-user text-sm
-text-purple-300"></i> PROFIL​
-</button>​
-<button onclick="bukaModalTopUp()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs
-font-bold py-2 px-1 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-wallet text-sm
-text-purple-300"></i> TOPUP​
-</button>​
-<button onclick="bukaModalRiwayat()"
-class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs
-font-bold py-2 px-1 rounded-xl transition flex flex-col items-center
-gap-1">​
-<i class="fa-solid fa-clock-rotate-left
-text-sm text-purple-300"></i> RIWAYAT​
-</button>​
-`;​
-}​
-} else {​
-container.innerHTML = `​
-<button onclick="bukaModalLogin()"
-class="bg-purple-600 text-white px-3 py-2 rounded-lg text-xs
-font-bold">LOGIN</button>​
-<button onclick="bukaModalDaftar()"
-class="bg-white text-purple-800 px-3 py-2 rounded-lg text-xs
-font-bold">DAFTAR</button>​
-`;​
-dashboardCard.classList.add('hidden');​
-guestBanner.classList.remove('hidden');​
-if (adminBtn) {​
-adminBtn.classList.add('hidden');​
-adminBtn.classList.remove('flex');​
-}​
-}​
-}​
-​
-function bukaModalProfil() {​
-if (!userAktif) { bukaModalLogin(); return; }​
-document.getElementById('profil-nama').innerText =
-userAktif.nama;​
-document.getElementById('profil-email').innerText =
-userAktif.email;​
-document.getElementById('profil-saldo').innerText = "Rp "
-+ userAktif.saldo.toLocaleString();​
-document.getElementById('profil-modal').classList.remove('hidden');​
-}​
-function tutupModalProfil() {
-document.getElementById('profil-modal').classList.add('hidden'); }​
-​
-function bukaModalRiwayat() {​
-if (!userAktif) { bukaModalLogin(); return; }​
-let container =
-document.getElementById('riwayat-list-container');​
-container.innerHTML = "";​
-if (!userAktif.riwayat || userAktif.riwayat.length === 0)
-{​
-container.innerHTML = `<p class="text-gray-500
-text-center py-4 text-sm">Belum ada riwayat transaksi.</p>`;​
-} else {​
-userAktif.riwayat.forEach(item => {​
-container.innerHTML += `<div class="bg-purple-50
-p-3 rounded-xl text-xs text-gray-700 border-l-4 border-purple-600
-shadow-sm">${item}</div>`;​
-});​
-}​
-document.getElementById('riwayat-modal').classList.remove('hidden');​
-}​
-function tutupModalRiwayat() {
-document.getElementById('riwayat-modal').classList.add('hidden'); }​
-​
-function tutupModalSaldoKurang() {
-document.getElementById('saldo-kurang-modal').classList.add('hidden');
-}​
-function bukaTopupDariKurang() { ​
-tutupModalSaldoKurang(); ​
-bukaModalTopUp(); ​
-}​
-​
-function bukaModalLogin() {
-document.getElementById('login-modal').classList.remove('hidden'); }​
-function tutupModalLogin() {
-document.getElementById('login-modal').classList.add('hidden'); }​
-function bukaModalDaftar() {
-document.getElementById('register-modal').classList.remove('hidden');
-}​
-function tutupModalDaftar() {
-document.getElementById('register-modal').classList.add('hidden'); }​
-function alihKeDaftar() { tutupModalLogin();
-bukaModalDaftar(); }​
-function alihKeLogin() { tutupModalDaftar(); bukaModalLogin();
-}​
-​
-function bukaPanelAdmin() {​
-if (!userAktif || userAktif.email !== "admin@rmdshop.com")
-{ showCustomAlert("Akses Ditolak", "Anda tidak memiliki izin mengakses
-panel admin!"); return; }​
-document.getElementById('admin-input-logo').value =
-dbToko.logoUrl;​
-document.getElementById('admin-input-qris').value =
-dbToko.qrisUrl;​
-document.getElementById('admin-banner-0').value =
-dbToko.banners[0];​
-document.getElementById('admin-banner-1').value =
-dbToko.banners[1];​
-document.getElementById('admin-banner-2').value =
-dbToko.banners[2];​
-document.getElementById('admin-modal').classList.remove('hidden');​
-}​
-function tutupPanelAdmin() {
-document.getElementById('admin-modal').classList.add('hidden'); }​
-</script>​
-</body>​
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RMDSHOP - Toko Online Terpercaya</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        purple: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                            950: '#3b0764',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+</head>
+<body class="bg-purple-50 text-gray-800 font-sans pb-24 md:pb-16">
+
+    <!-- HEADER / NAVBAR -->
+    <header class="bg-purple-800 text-white sticky top-0 z-50 shadow-md">
+        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+            <a href="#" onclick="tampilkanBeranda()" id="logo-container" class="text-2xl font-extrabold tracking-wider flex items-center gap-2">
+                <i class="fa-solid fa-store text-purple-300"></i> 
+                <span id="logo-text">RMD<span class="text-purple-300">SHOP</span></span>
+            </a>
+            
+            <nav class="hidden md:flex space-x-6 font-medium items-center">
+                <a href="#" onclick="tampilkanBeranda()" class="hover:text-purple-300 transition">Beranda</a>
+                <a href="#katalog" onclick="tampilkanBeranda()" class="hover:text-purple-300 transition">Kategori</a>
+                <button id="nav-admin-btn" onclick="bukaPanelAdmin()" class="hidden bg-purple-700 hover:bg-purple-600 text-purple-200 px-3 py-1.5 rounded-lg text-sm transition font-semibold items-center gap-1.5">
+                    <i class="fa-solid fa-user-gear"></i> Panel Admin
+                </button>
+            </nav>
+
+            <div class="flex items-center space-x-3">
+                <div id="auth-menu" class="flex items-center space-x-2">
+                    <button onclick="bukaModalLogin()" class="bg-purple-600 hover:bg-purple-500 text-white px-3 py-2 rounded-lg text-xs font-bold transition">LOGIN</button>
+                    <button onclick="bukaModalDaftar()" class="bg-white text-purple-800 hover:bg-purple-100 px-3 py-2 rounded-lg text-xs font-bold transition">DAFTAR</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- KONTEN UTAMA (BERANDA) -->
+    <div id="view-beranda">
+        <section class="bg-gradient-to-r from-purple-900 via-purple-700 to-indigo-800 text-white py-12 px-4 text-center">
+            <div class="container mx-auto max-w-3xl">
+                <h1 class="text-3xl md:text-4xl font-extrabold mb-2 leading-tight">Selamat Datang di <span class="text-purple-300">RMDSHOP</span></h1>
+                <p class="text-sm md:text-base text-purple-200 mb-6">Pusat Top-Up & Belanja Online Terlengkap.</p>
+
+                <div id="user-dashboard-card" class="bg-purple-800 bg-opacity-75 backdrop-blur-md border border-purple-600 p-5 rounded-2xl shadow-xl max-w-md mx-auto hidden">
+                    <div class="mb-3">
+                        <span class="text-xs uppercase tracking-wider text-purple-300 font-bold">Total Saldo Anda</span>
+                        <div id="user-saldo-display" class="text-3xl font-extrabold text-white mt-1">Rp 0</div>
+                    </div>
+                    <div id="dashboard-menu-grid" class="grid grid-cols-3 gap-2 pt-2 border-t border-purple-700">
+                        <button onclick="bukaModalProfil()" class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs font-bold py-2 px-1 rounded-xl transition flex flex-col items-center gap-1"><i class="fa-solid fa-user text-sm text-purple-300"></i> PROFIL</button>
+                        <button onclick="bukaModalTopUp()" class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs font-bold py-2 px-1 rounded-xl transition flex flex-col items-center gap-1"><i class="fa-solid fa-wallet text-sm text-purple-300"></i> TOPUP</button>
+                        <button onclick="bukaModalRiwayat()" class="bg-purple-700 hover:bg-purple-600 text-purple-100 text-xs font-bold py-2 px-1 rounded-xl transition flex flex-col items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-sm text-purple-300"></i> RIWAYAT</button>
+                    </div>
+                </div>
+
+                <div id="guest-banner" class="mt-4">
+                    <a href="#katalog" class="bg-white text-purple-800 font-bold px-8 py-3 rounded-full shadow-lg hover:bg-purple-100 transition duration-300 inline-block text-sm">
+                        Mulai Belanja <i class="fa-solid fa-arrow-down ml-2"></i>
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <!-- IMAGE SLIDER -->
+        <section class="container mx-auto px-4 pt-8 max-w-4xl">
+            <div class="relative overflow-hidden rounded-2xl shadow-md bg-white border border-purple-100">
+                <div id="slider-track" class="flex transition-transform duration-500 ease-in-out">
+                    <div class="min-w-full h-44 sm:h-56 md:h-64 flex items-center justify-center bg-purple-900 relative"><img id="banner-img-0" src="" alt="Banner 1" class="w-full h-full object-cover"></div>
+                    <div class="min-w-full h-44 sm:h-56 md:h-64 flex items-center justify-center bg-purple-900 relative"><img id="banner-img-1" src="" alt="Banner 2" class="w-full h-full object-cover"></div>
+                    <div class="min-w-full h-44 sm:h-56 md:h-64 flex items-center justify-center bg-purple-900 relative"><img id="banner-img-2" src="" alt="Banner 3" class="w-full h-full object-cover"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KATEGORI UTAMA -->
+        <main id="katalog" class="container mx-auto px-4 py-12">
+            <div class="text-center mb-8">
+                <h2 class="text-3xl font-bold text-purple-900">Kategori Pilihan</h2>
+                <p class="text-gray-600 mt-2">Pilih kategori layanan yang Anda butuhkan</p>
+            </div>
+            <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+                <div onclick="bukaKategoriView('e-wallet')" class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer flex flex-col items-center text-center group border border-purple-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-700 text-2xl mb-4"><i class="fa-solid fa-wallet"></i></div>
+                    <h3 class="font-bold text-lg text-gray-800">E-WALLET</h3>
+                </div>
+                <div onclick="bukaKategoriView('pulsa')" class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer flex flex-col items-center text-center group border border-purple-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-700 text-2xl mb-4"><i class="fa-solid fa-mobile-screen"></i></div>
+                    <h3 class="font-bold text-lg text-gray-800">PULSA</h3>
+                </div>
+                <div onclick="bukaKategoriView('game')" class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer flex flex-col items-center text-center group border border-purple-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-700 text-2xl mb-4"><i class="fa-solid fa-gamepad"></i></div>
+                    <h3 class="font-bold text-lg text-gray-800">GAME</h3>
+                </div>
+                <div onclick="bukaKategoriView('aplikasi')" class="bg-white p-6 rounded-2xl shadow-md hover:shadow-xl transition cursor-pointer flex flex-col items-center text-center group border border-purple-100">
+                    <div class="w-16 h-16 bg-purple-100 rounded-2xl flex items-center justify-center text-purple-700 text-2xl mb-4"><i class="fa-solid fa-layer-group"></i></div>
+                    <h3 class="font-bold text-lg text-gray-800">APLIKASI</h3>
+                </div>
+            </div>
+        </main>
+    </div>
+    <!-- TAMPILAN KATEGORI DETAIL -->
+    <div id="view-kategori-detail" class="container mx-auto px-4 py-8 hidden max-w-4xl">
+        <button onclick="tampilkanBeranda()" class="mb-4 text-purple-700 font-bold flex items-center gap-2 text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border inline-flex">
+            <i class="fa-solid fa-arrow-left"></i> Kembali ke Beranda
+        </button>
+        <div class="bg-white p-6 rounded-2xl shadow-sm mb-6 flex items-center gap-4 border">
+            <div id="detail-kat-icon" class="w-14 h-14 bg-purple-100 text-purple-700 rounded-2xl flex items-center justify-center text-2xl"><i class="fa-solid fa-wallet"></i></div>
+            <div>
+                <h2 id="detail-kat-title" class="text-2xl font-extrabold text-purple-900 uppercase">E-Wallet</h2>
+                <p class="text-xs text-gray-500 mt-0.5">Pilih produk dan layanan kategori ini.</p>
+            </div>
+        </div>
+        <div id="detail-produk-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4"></div>
+    </div>
+
+    <!-- TAMPILAN DETAIL PRODUK -->
+    <div id="view-detail-produk" class="container mx-auto px-4 py-8 hidden max-w-2xl">
+        <button onclick="bukaKategoriView(produkDipilih.kategori)" class="mb-4 text-purple-700 font-bold flex items-center gap-2 text-sm bg-white px-3 py-1.5 rounded-lg shadow-sm border inline-flex">
+            <i class="fa-solid fa-arrow-left"></i> Kembali
+        </button>
+        <div class="bg-white p-6 rounded-2xl shadow-md border mb-4 flex items-center gap-4">
+            <img id="transaksi-produk-img" src="" alt="Produk" class="w-16 h-16 object-cover rounded-xl border">
+            <div>
+                <h2 id="transaksi-produk-nama" class="text-xl font-bold text-purple-900">Nama Produk</h2>
+                <p class="text-xs text-gray-500">Pilih nominal dan metode pembayaran.</p>
+            </div>
+        </div>
+        <div class="space-y-4">
+            <div class="bg-white p-5 rounded-2xl shadow-sm border">
+                <label class="block text-sm font-bold text-purple-900 mb-2">1. Nomor Tujuan / ID Akun:</label>
+                <input type="text" id="input-target-tujuan" placeholder="Contoh: 08123456789" class="w-full border rounded-xl p-3 text-sm focus:outline-none">
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border">
+                <label class="block text-sm font-bold text-purple-900 mb-3">2. Nominal:</label>
+                <div id="nominal-grid-container" class="grid grid-cols-2 gap-3"></div>
+            </div>
+            <div class="bg-white p-5 rounded-2xl shadow-sm border">
+                <label class="block text-sm font-bold text-purple-900 mb-2">3. Konfirmasi & Bayar:</label>
+                <div class="bg-purple-50 p-4 rounded-xl space-y-1.5 border text-xs mb-3">
+                    <div class="flex justify-between font-bold text-purple-900 text-sm"><span>Total Tagihan</span><span id="summary-total">Rp 0</span></div>
+                </div>
+                <button onclick="eksekusiBeliSekarang()" class="w-full bg-pink-600 text-white font-bold py-3.5 rounded-xl transition text-sm">BELI SEKARANG</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- FIXED BOTTOM NAVIGATION BAR -->
+    <div class="fixed bottom-0 left-0 right-0 bg-purple-900 border-t border-purple-700 shadow-2xl z-40 px-2 py-2">
+        <div class="max-w-md mx-auto flex justify-around items-center">
+            <button onclick="bukaKategoriView('e-wallet')" class="flex flex-col items-center text-purple-200 py-1 px-2"><i class="fa-solid fa-wallet text-lg mb-1"></i><span class="text-[11px]">E-WALLET</span></button>
+            <button onclick="bukaKategoriView('pulsa')" class="flex flex-col items-center text-purple-200 py-1 px-2"><i class="fa-solid fa-mobile-screen text-lg mb-1"></i><span class="text-[11px]">PULSA</span></button>
+            <button onclick="tampilkanBeranda()" class="flex flex-col items-center -mt-5 text-white"><div class="bg-pink-600 shadow-lg w-14 h-14 rounded-full flex items-center justify-center border-4 border-purple-900"><i class="fa-solid fa-bars text-xl"></i></div><span class="text-xs font-bold mt-1">MENU</span></button>
+            <button onclick="bukaKategoriView('game')" class="flex flex-col items-center text-purple-200 py-1 px-2"><i class="fa-solid fa-gamepad text-lg mb-1"></i><span class="text-[11px]">GAME</span></button>
+            <button onclick="bukaKategoriView('aplikasi')" class="flex flex-col items-center text-purple-200 py-1 px-2"><i class="fa-solid fa-layer-group text-lg mb-1"></i><span class="text-[11px]">APLIKASI</span></button>
+        </div>
+    </div>
+    <!-- KUSTOM POP-UP MODAL -->
+    <div id="custom-alert-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center shadow-2xl">
+            <h3 id="alert-title" class="text-xl font-bold text-gray-900 mb-2">Pemberitahuan</h3>
+            <p id="alert-message" class="text-xs text-gray-600 mb-6">Pesan...</p>
+            <button onclick="tutupCustomAlert()" class="w-full bg-purple-700 text-white font-bold py-2.5 rounded-xl text-sm">OK</button>
+        </div>
+    </div>
+
+    <!-- MODAL PROFIL -->
+    <div id="profil-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative text-center">
+            <button onclick="tutupModalProfil()" class="absolute top-4 right-4 text-gray-400 font-bold">&times;</button>
+            <h3 id="profil-nama" class="text-xl font-bold text-purple-900">Nama User</h3>
+            <p id="profil-email" class="text-xs text-gray-500 mb-4">email@domain.com</p>
+            <div class="bg-purple-50 p-4 rounded-xl mb-4"><span class="text-xs font-bold text-purple-800">Saldo Aktif</span><div id="profil-saldo" class="text-2xl font-extrabold text-purple-900">Rp 0</div></div>
+            <button onclick="tutupModalProfil()" class="w-full bg-purple-700 text-white font-bold py-2.5 rounded-lg text-sm">Tutup</button>
+        </div>
+    </div>
+
+    <!-- MODAL TOPUP QRIS -->
+    <div id="topup-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl relative text-center">
+            <button onclick="tutupModalTopUp()" class="absolute top-4 right-4 text-gray-400 font-bold">&times;</button>
+            <h3 class="text-xl font-bold text-purple-900 mb-1">Top-Up Saldo</h3>
+            <div class="bg-purple-50 p-3 rounded-xl border inline-block mb-3"><img id="qris-img-display" src="" alt="QRIS" class="w-48 h-48 mx-auto object-contain rounded-lg"></div>
+            <input type="number" id="input-topup-nominal" placeholder="Nominal Topup (Rp)" class="w-full border rounded-lg p-2.5 text-sm text-center mb-3 font-bold">
+            <button onclick="prosesTopUpQRIS()" class="w-full bg-green-600 text-white font-bold py-3 rounded-xl text-sm">Konfirmasi Pembayaran</button>
+        </div>
+    </div>
+
+    <!-- PANEL ADMIN -->
+    <div id="admin-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div class="bg-purple-900 text-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button onclick="tutupPanelAdmin()" class="absolute top-4 right-4 text-purple-300 text-2xl font-bold">&times;</button>
+            <h2 class="text-3xl font-bold text-purple-200 mb-6 text-center">Panel Admin Toko</h2>
+            <div class="bg-purple-800 p-4 rounded-xl mb-4">
+                <h3 class="font-bold text-purple-200 mb-2">Logo & QRIS</h3>
+                <input type="text" id="admin-input-logo" placeholder="URL Logo" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm mb-2 text-white">
+                <button onclick="ubahLogoToko()" class="w-full bg-purple-600 font-bold py-2 rounded-lg text-xs mb-3">Simpan Logo</button>
+                <input type="text" id="admin-input-qris" placeholder="URL QRIS" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm mb-2 text-white">
+                <button onclick="ubahQrisToko()" class="w-full bg-purple-600 font-bold py-2 rounded-lg text-xs">Simpan QRIS</button>
+            </div>
+            <div class="bg-purple-800 p-4 rounded-xl">
+                <h3 class="font-bold text-purple-200 mb-2">Tambah Produk</h3>
+                <select id="select-kategori-produk" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm mb-2 text-white"><option value="e-wallet">E-Wallet</option><option value="pulsa">Pulsa</option><option value="game">Game</option><option value="aplikasi">Aplikasi</option></select>
+                <input type="text" id="input-nama-produk" placeholder="Nama Produk" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm mb-2 text-white">
+                <input type="text" id="input-gambar-produk" placeholder="URL Gambar" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm mb-2 text-white">
+                <input type="text" id="input-nominals-produk" placeholder="Nominal (50000, 100000)" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm mb-2 text-white">
+                <button onclick="tambahProduk()" class="w-full bg-pink-600 font-bold py-2.5 rounded-lg text-sm">Simpan Produk</button>
+            </div>
+        </div>
+    </div>
+    <!-- SCRIPT JAVASCRIPT UTAMA -->
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyBUesQ1Ei23zsO0pBFuqI2VunBT4lmWlEA",
+            authDomain: "tokormd.firebaseapp.com",
+            projectId: "tokormd",
+            storageBucket: "tokormd.firebasestorage.app",
+            messagingSenderId: "1082449248040",
+            appId: "1:1082449248040:web:1fb8cb78e1f1d883ca9a1d"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        let dbToko = {
+            logoUrl: "", qrisUrl: "",
+            banners: [
+                "https://images.unsplash.com/photo-1607532943733-bd0501861ad9?auto=format&fit=crop&w=1000&q=80",
+                "https://images.unsplash.com/photo-1556742049-0a67d553c2a5?auto=format&fit=crop&w=1000&q=80",
+                "https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=1000&q=80"
+            ],
+            produk: [
+                { id: 1, kategori: 'e-wallet', nama: 'Dana', gambar: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=500&q=80', nominals: [50000, 100000] }
+            ]
+        };
+
+        let userAktif = null, kategoriAktif = 'e-wallet', produkDipilih = null, nominalTerpilih = null;
+
+        function showCustomAlert(judul, pesan) {
+            document.getElementById('alert-title').innerText = judul;
+            document.getElementById('alert-message').innerText = pesan;
+            document.getElementById('custom-alert-modal').classList.remove('hidden');
+        }
+        function tutupCustomAlert() { document.getElementById('custom-alert-modal').classList.add('hidden'); }
+
+        function muatDataRealtime() {
+            db.collection("toko").doc("setting").onSnapshot((doc) => {
+                if (doc.exists) {
+                    let data = doc.data();
+                    if (data.logoUrl !== undefined) dbToko.logoUrl = data.logoUrl;
+                    if (data.qrisUrl !== undefined) dbToko.qrisUrl = data.qrisUrl;
+                    if (data.banners) dbToko.banners = data.banners;
+                    if (data.produk) dbToko.produk = data.produk;
+                } else {
+                    db.collection("toko").doc("setting").set(dbToko);
+                }
+                applyLogoBranding();
+                applyBanners();
+                if (!document.getElementById('view-kategori-detail').classList.contains('hidden')) {
+                    renderProdukKategoriDetail();
+                }
+            });
+        }
+
+        function simpanKeDatabaseServer() {
+            db.collection("toko").doc("setting").set({
+                logoUrl: dbToko.logoUrl, qrisUrl: dbToko.qrisUrl, banners: dbToko.banners, produk: dbToko.produk
+            }).then(() => { showCustomAlert("Sukses", "Perubahan tersimpan ke server!"); });
+        }
+
+        window.onload = function() {
+            muatDataRealtime();
+            let activeSession = localStorage.getItem('rmdshop_active_user');
+            if (activeSession) {
+                let users = JSON.parse(localStorage.getItem('rmdshop_users') || '[]');
+                userAktif = users.find(u => u.email === activeSession) || null;
+            }
+            cekStatusAuth();
+        };
+
+        function applyLogoBranding() {
+            let container = document.getElementById('logo-container');
+            if (dbToko.logoUrl) {
+                container.innerHTML = `<img src="${dbToko.logoUrl}" alt="Logo" class="h-8 object-contain">`;
+            } else {
+                container.innerHTML = `<i class="fa-solid fa-store text-purple-300"></i> RMD<span class="text-purple-300">SHOP</span>`;
+            }
+        }
+
+        function applyBanners() {
+            for (let i = 0; i < 3; i++) {
+                let imgEl = document.getElementById(`banner-img-${i}`);
+                if (imgEl && dbToko.banners[i]) imgEl.src = dbToko.banners[i];
+            }
+        }
+
+        function tampilkanBeranda() {
+            document.getElementById('view-beranda').classList.remove('hidden');
+            document.getElementById('view-kategori-detail').classList.add('hidden');
+            document.getElementById('view-detail-produk').classList.add('hidden');
+        }
+
+        function bukaKategoriView(kategori) {
+            kategoriAktif = kategori;
+            document.getElementById('view-beranda').classList.add('hidden');
+            document.getElementById('view-kategori-detail').classList.remove('hidden');
+            document.getElementById('view-detail-produk').classList.add('hidden');
+            document.getElementById('detail-kat-title').innerText = kategori.toUpperCase();
+            renderProdukKategoriDetail();
+        }
+
+        function renderProdukKategoriDetail() {
+            let grid = document.getElementById('detail-produk-grid');
+            grid.innerHTML = "";
+            let filtered = dbToko.produk.filter(p => p.kategori === kategoriAktif);
+            filtered.forEach(prod => {
+                grid.innerHTML += `
+                    <div class="bg-white rounded-2xl shadow-sm p-4 flex flex-col items-center text-center border">
+                        <img src="${prod.gambar}" class="w-20 h-20 object-cover rounded-xl mb-2">
+                        <h4 class="font-bold text-sm mb-2">${prod.nama}</h4>
+                        <button onclick="pilihProdukLihat(${prod.id})" class="mt-auto w-full bg-purple-600 text-white py-2 rounded-xl text-xs font-bold">LIHAT</button>
+                    </div>`;
+            });
+        }
+
+        function pilihProdukLihat(id) {
+            produkDipilih = dbToko.produk.find(p => p.id === id);
+            document.getElementById('view-kategori-detail').classList.add('hidden');
+            document.getElementById('view-detail-produk').classList.remove('hidden');
+            document.getElementById('transaksi-produk-img').src = produkDipilih.gambar;
+            document.getElementById('transaksi-produk-nama').innerText = produkDipilih.nama;
+            renderNominalBoxes();
+        }
+
+        function renderNominalBoxes() {
+            let container = document.getElementById('nominal-grid-container');
+            container.innerHTML = "";
+            produkDipilih.nominals.forEach(nom => {
+                container.innerHTML += `<button onclick="pilihNominal(${nom})" class="border bg-purple-50 hover:bg-purple-100 text-purple-900 font-bold py-3 rounded-xl text-sm">Rp ${nom.toLocaleString()}</button>`;
+            });
+        }
+
+        function pilihNominal(nilai) {
+            nominalTerpilih = nilai;
+            document.getElementById('summary-total').innerText = "Rp " + nilai.toLocaleString();
+        }
+
+        function ubahLogoToko() {
+            dbToko.logoUrl = document.getElementById('admin-input-logo').value.trim();
+            simpanKeDatabaseServer();
+            applyLogoBranding();
+        }
+
+        function ubahQrisToko() {
+            dbToko.qrisUrl = document.getElementById('admin-input-qris').value.trim();
+            simpanKeDatabaseServer();
+        }
+
+        function tambahProduk() {
+            let kategori = document.getElementById('select-kategori-produk').value;
+            let nama = document.getElementById('input-nama-produk').value.trim();
+            let gambar = document.getElementById('input-gambar-produk').value.trim();
+            let nominals = document.getElementById('input-nominals-produk').value.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+            if (!nama || !gambar || nominals.length === 0) { showCustomAlert("Error", "Lengkapi data!"); return; }
+            dbToko.produk.push({ id: Date.now(), kategori, nama, gambar, nominals });
+            simpanKeDatabaseServer();
+        }
+
+        function cekStatusAuth() {
+            let container = document.getElementById('auth-menu'), adminBtn = document.getElementById('nav-admin-btn');
+            if (userAktif) {
+                container.innerHTML = `<button onclick="logout()" class="bg-pink-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold">LOGOUT</button>`;
+                if (userAktif.email === "admin@rmdshop.com" && adminBtn) adminBtn.classList.remove('hidden');
+            } else {
+                container.innerHTML = `<button onclick="bukaModalLogin()" class="bg-purple-600 text-white px-3 py-2 rounded-lg text-xs font-bold">LOGIN</button>`;
+                if (adminBtn) adminBtn.classList.add('hidden');
+            }
+        }
+        function logout() { userAktif = null; localStorage.removeItem('rmdshop_active_user'); location.reload(); }
+        function bukaPanelAdmin() { if (userAktif?.email === "admin@rmdshop.com") document.getElementById('admin-modal').classList.remove('hidden'); }
+        function tutupPanelAdmin() { document.getElementById('admin-modal').classList.add('hidden'); }
+        function bukaModalTopUp() { document.getElementById('topup-modal').classList.remove('hidden'); }
+        function tutupModalTopUp() { document.getElementById('topup-modal').classList.add('hidden'); }
+        function bukaModalProfil() { document.getElementById('profil-modal').classList.remove('hidden'); }
+        function tutupModalProfil() { document.getElementById('profil-modal').classList.add('hidden'); }
+        function bukaModalRiwayat() { showCustomAlert("Riwayat", "Belum ada transaksi."); }
+        function bukaModalLogin() { showCustomAlert("Login", "Gunakan akun admin@rmdshop.com / admin123 untuk akses admin."); }
+        function bukaModalDaftar() { showCustomAlert("Daftar", "Fitur daftar aktif."); }
+        function eksekusiBeliSekarang() { showCustomAlert("Sukses", "Pembelian berhasil diproses."); }
+        function prosesTopUpQRIS() { tutupModalTopUp(); showCustomAlert("Sukses", "Top-up berhasil."); }
+    </script>
+</body>
 </html>
