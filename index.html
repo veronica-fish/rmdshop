@@ -189,7 +189,7 @@
         <div class="space-y-4">
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-purple-100">
                 <label class="block text-sm font-bold text-purple-900 mb-2">1. Masukkan Nomor Tujuan / ID Akun:</label>
-                <input type="text" id="input-target-tujuan" inputmode="numeric" oninput="this.value = this.value.replace(/[^0-9]/g, '')" placeholder="Contoh: 08123456789 (Hanya Angka)" class="w-full border border-purple-200 rounded-xl p-3 text-sm focus:outline-none focus:border-purple-600">
+                <input type="text" id="input-target-tujuan" placeholder="Contoh: ID Pengguna atau Username" class="w-full border border-purple-200 rounded-xl p-3 text-sm focus:outline-none focus:border-purple-600">
             </div>
 
             <div class="bg-white p-5 rounded-2xl shadow-sm border border-purple-100">
@@ -749,7 +749,7 @@
         function eksekusiBeliSekarang() {
             if (!userAktif) { showCustomAlert("Perhatian", "Silahkan login terlebih dahulu!"); bukaModalLogin(); return; }
             let targetTujuan = document.getElementById('input-target-tujuan').value.trim();
-            if (!targetTujuan) { showCustomAlert("Perhatian", "Masukkan Nomor Tujuan!"); return; }
+            if (!targetTujuan) { showCustomAlert("Perhatian", "Masukkan Nomor Tujuan atau ID Akun!"); return; }
             if (!nominalTerpilih) { showCustomAlert("Perhatian", "Pilih nominal terlebih dahulu!"); return; }
             let nomorWa = document.getElementById('input-wa-konfirmasi').value.trim();
             if (!nomorWa) { showCustomAlert("Perhatian", "Masukkan Nomor WhatsApp!"); return; }
