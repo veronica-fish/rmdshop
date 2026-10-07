@@ -457,7 +457,7 @@
                     </div>
                     <div>
                         <label class="block text-xs uppercase font-bold text-purple-300 mb-1">Nama Item</label>
-                        <input type="text" id="input-nama-produk" placeholder="Contoh: Dana" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm text-white focus:outline-none">
+                        <input type="text" id="input-nama-produk" placeholder="Contoh: Roblox Robux" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm text-white focus:outline-none">
                     </div>
                     <div>
                         <label class="block text-xs uppercase font-bold text-purple-300 mb-1">URL Gambar (ImageUrl)</label>
@@ -465,8 +465,8 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label class="block text-xs uppercase font-bold text-purple-300 mb-1">Daftar Nominal (Pisahkan dengan koma, contoh: 50000, 100000, 200000)</label>
-                    <input type="text" id="input-nominals-produk" placeholder="50000, 100000, 150000" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm text-white focus:outline-none font-bold">
+                    <label class="block text-xs uppercase font-bold text-purple-300 mb-1">Format Label & Harga (Contoh: 100 ROBUX:10000, 200 ROBUX:20000)</label>
+                    <input type="text" id="input-nominals-produk" placeholder="100 ROBUX:10000, 200 ROBUX:20000" class="w-full bg-purple-900 border border-purple-600 rounded-lg p-2 text-sm text-white focus:outline-none font-bold">
                 </div>
                 <button onclick="tambahProduk()" class="w-full bg-pink-600 hover:bg-pink-500 font-bold py-2.5 rounded-lg text-sm transition">Simpan Item Baru</button>
             </div>
@@ -554,38 +554,24 @@
             produk: [
                 { 
                     id: 1, 
-                    kategori: 'e-wallet', 
-                    nama: 'Dana', 
-                    gambar: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=500&q=80',
-                    nominals: [50000, 100000, 150000, 200000] 
+                    kategori: 'game', 
+                    nama: 'Roblox Robux', 
+                    gambar: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80',
+                    nominals: [
+                        { label: "100 ROBUX", harga: 10000 },
+                        { label: "200 ROBUX", harga: 20000 },
+                        { label: "500 ROBUX", harga: 50000 }
+                    ] 
                 },
                 { 
                     id: 2, 
                     kategori: 'e-wallet', 
-                    nama: 'GoPay', 
-                    gambar: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=500&q=80',
-                    nominals: [20000, 50000, 100000] 
-                },
-                { 
-                    id: 3, 
-                    kategori: 'pulsa', 
-                    nama: 'Pulsa Telkomsel', 
-                    gambar: 'https://images.unsplash.com/photo-1526738549149-8e07eca6c147?auto=format&fit=crop&w=500&q=80',
-                    nominals: [10000, 25000, 50000, 100000] 
-                },
-                { 
-                    id: 4, 
-                    kategori: 'game', 
-                    nama: 'Diamond Mobile Legends', 
-                    gambar: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=500&q=80',
-                    nominals: [20000, 50000, 100000, 250000] 
-                },
-                { 
-                    id: 5, 
-                    kategori: 'aplikasi', 
-                    nama: 'Netflix Premium', 
-                    gambar: 'https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?auto=format&fit=crop&w=500&q=80',
-                    nominals: [50000, 120000, 180000] 
+                    nama: 'Dana', 
+                    gambar: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=500&q=80',
+                    nominals: [
+                        { label: "SALDO 50K", harga: 50000 },
+                        { label: "SALDO 100K", harga: 100000 }
+                    ] 
                 }
             ]
         };
@@ -625,7 +611,7 @@
             localStorage.setItem('rmdshop_users', JSON.stringify(users));
         }
 
-        // Sinkronisasi data Real-time dari Firebase Firestore (Otomatis Memperbarui Tampilan User)
+        // Sinkronisasi data Real-time dari Firebase Firestore
         function muatDataRealtime() {
             db.collection("toko").doc("setting").onSnapshot((doc) => {
                 if (doc.exists) {
@@ -844,23 +830,24 @@
                 return;
             }
 
-            produkDipilih.nominals.forEach(nom => {
-                let isSelected = (nominalTerpilih === nom);
+            produkDipilih.nominals.forEach((nom) => {
+                let isSelected = (nominalTerpilih && nominalTerpilih.harga === nom.harga);
                 let activeClass = isSelected ? 'bg-purple-700 text-white border-purple-800 shadow-md ring-2 ring-purple-400' : 'bg-purple-50 hover:bg-purple-100 text-purple-900 border-purple-200';
                 
                 container.innerHTML += `
-                    <button type="button" onclick="pilihNominal(${nom})" class="border ${activeClass} font-bold py-3 px-3 rounded-xl text-sm transition text-center flex flex-col items-center justify-center">
-                        Rp ${nom.toLocaleString()}
+                    <button type="button" onclick='pilihNominal(${JSON.stringify(nom)})' class="border ${activeClass} font-bold py-3 px-3 rounded-xl text-sm transition text-center flex flex-col items-center justify-center">
+                        <span class="text-xs uppercase font-extrabold">${nom.label}</span>
+                        <span class="text-xs font-semibold mt-1">Rp ${nom.harga.toLocaleString()}</span>
                     </button>
                 `;
             });
         }
 
-        function pilihNominal(nilai) {
-            nominalTerpilih = nilai;
+        function pilihNominal(objNominal) {
+            nominalTerpilih = objNominal;
             renderNominalBoxes();
-            document.getElementById('summary-nominal').innerText = "Rp " + nilai.toLocaleString();
-            document.getElementById('summary-total').innerText = "Rp " + nilai.toLocaleString();
+            document.getElementById('summary-nominal').innerText = `${objNominal.label} (Rp ${objNominal.harga.toLocaleString()})`;
+            document.getElementById('summary-total').innerText = "Rp " + objNominal.harga.toLocaleString();
         }
 
         function eksekusiBeliSekarang() {
@@ -889,7 +876,7 @@
                 return;
             }
 
-            let totalTagihan = nominalTerpilih;
+            let totalTagihan = nominalTerpilih.harga;
 
             if (userAktif.saldo < totalTagihan) {
                 document.getElementById('saldo-kurang-modal').classList.remove('hidden');
@@ -901,7 +888,7 @@
             if (idx !== -1) {
                 users[idx].saldo -= totalTagihan;
                 let waktu = new Date().toLocaleString();
-                users[idx].riwayat.unshift(`Pembelian ${produkDipilih.nama} (Nominal: Rp ${totalTagihan.toLocaleString()}, Tujuan: ${targetTujuan}, WA: ${nomorWa}) - (${waktu})`);
+                users[idx].riwayat.unshift(`Pembelian ${produkDipilih.nama} - ${nominalTerpilih.label} (Rp ${totalTagihan.toLocaleString()}, Tujuan: ${targetTujuan}, WA: ${nomorWa}) - (${waktu})`);
                 saveDatabaseUser(users);
                 userAktif = users[idx];
             }
@@ -946,10 +933,21 @@
                 return;
             }
 
-            let nominalsArr = nominalsStr.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n) && n > 0);
+            let nominalsArr = [];
+            let parts = nominalsStr.split(',');
+            for (let part of parts) {
+                let sub = part.split(':');
+                if (sub.length === 2) {
+                    let label = sub[0].trim();
+                    let harga = parseInt(sub[1].trim());
+                    if (label && !isNaN(harga) && harga > 0) {
+                        nominalsArr.push({ label: label, harga: harga });
+                    }
+                }
+            }
 
             if (nominalsArr.length === 0) {
-                showCustomAlert("Format Salah", "Masukkan angka dipisahkan koma, contoh: 50000, 100000");
+                showCustomAlert("Format Salah", "Gunakan format Label:Harga, contoh: 100 ROBUX:10000, 200 ROBUX:20000");
                 return;
             }
 
